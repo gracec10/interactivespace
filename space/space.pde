@@ -1,15 +1,5 @@
-import processing.serial.*;
-
 import gifAnimation.*;
 import processing.sound.*;
-
-// variables for arduino
-Serial myPort;
-String input;
-int xPos;
-int yPos;
-int onOff;
-int button;
 
 PImage space;
 
@@ -17,7 +7,7 @@ float x = 720;
 float y = 450;
 float min_zoom_w = 1440;
 float max_zoom_w = 15840;
-float w_space= 3000;
+float w_space= 1440;
 float h_space = 900;
 float w_planet = 150;
 float h_planet = 150;
@@ -42,12 +32,12 @@ boolean show5 = false;
 boolean show6 = false;
 boolean show7 = false;
 float vol0 = 0.1;
-float vol1 = 0.3;
-float vol2 = 0.5;
-float vol3 = 0.7;
-float vol4 = 1;
-float vol5 = 0.6;
-float vol6 = 0.3;
+float vol1 = 0.1;
+float vol2 = 0.1;
+float vol3 = 0.1;
+float vol4 = 0.1;
+float vol5 = 0.1;
+float vol6 = 0.1;
 float vol7 = 0.1;
 float w0 = 150;
 float w1 = 150;
@@ -65,19 +55,8 @@ float h4 = 150;
 float h5 = 150;
 float h6 = 150;
 float h7 = 150;
-float x0 = -550;
-float x1 = -350;
-float x2 = -200;
-float x3 = 0;
-float x4 = 400;
-float x5 = 700;
-float x6 = 1200;
-float x7 = 1800;
 
 void setup() {
-  printArray(Serial.list());
-  myPort = new Serial(this, Serial.list()[3], 115200);
-
   fullScreen();
   background(0);
   
@@ -92,17 +71,6 @@ void setup() {
 }
 
 void draw() {
-  // read input
-  if (myPort.available() > 0){
-    input = myPort.readString();
-    String[] inputList = split(input, ",");
-    xPos = int(inputList[0]);
-    yPos = int(inputList[1]);
-    button = int(inputList[2]);
-    onOff = int(inputList[3]);
-    print(xPos + "," + yPos + "," + button + "," + onOff + '\n');
-  }
-    
   imageMode(CENTER);
   image(space, x, y, w_space, h_space);
   
@@ -113,97 +81,71 @@ void draw() {
   
   if (counter != -1 && symphony == true){
     if (show0 == true){
-      vol0 = 1 - (abs(700-x0)/1300);
-      image(planets[0], x0, y, w0, h0);
+      image(planets[0], 100, y, w0, h0);
       sounds[0].amp(vol0);
     }
     if (show1 == true){
-      vol1 = 1 - (abs(700-x1)/1300);
-      image(planets[1], x1, y, w1, h1);
+      image(planets[1], 250, y, w1, h1);
       sounds[1].amp(vol1);
     }
     if (show2 == true){
-      vol2 = 1 - (abs(700-x2)/1300);
-      image(planets[2], x2, y, w2, h2);
+      image(planets[2], 400, y, w2, h2);
       sounds[2].amp(vol2);
     }
     if (show3 == true){
-      vol3 = 1 - (abs(700-x3)/1300);
-      image(planets[3], x3, y, w3, h3);
+      image(planets[3], 550, y, w3, h3);
       sounds[3].amp(vol3);
     }
     if (show4 == true){
-      vol4 = 1 - (abs(700-x4)/1300);
-      image(planets[4], x4, y, w4, h4);
+      image(planets[4], 700, y, w4, h4);
       sounds[4].amp(vol4);
     }
     if (show5 == true){
-      vol5 = 1 - (abs(700-x5)/1300);
-      image(planets[5], x5, y, w5, h5);
+      image(planets[5], 850, y, w5, h5);
       sounds[5].amp(vol5);
     }
     if (show6 == true){
-      vol6 = 1 - (abs(700-x6)/1300);
-      image(planets[6], x6, y, w6, h6);
+      image(planets[6], 1000, y, w6, h6);
       sounds[6].amp(vol6);
     }
     if (show7 == true){
-      vol7 = 1 - (abs(700-x7)/1300);
-      image(planets[7], x7, y, w7, h7);
+      image(planets[7], 1150, y, w7, h7);
       sounds[7].amp(vol7);
     }
   }
-  
-   if (xPos < 1600 && symphony == false) x = x + 8;
-  if (xPos > 1900 && symphony == false) x = x - 8;
-  if (xPos < 1600 && symphony == true){
+}
+
+void keyPressed() {
+  if (keyCode == CONTROL) symphony = true;
+  if (keyCode == LEFT && symphony == false) x = x + 8;
+  if (keyCode == RIGHT && symphony == false) x = x - 8;
+  if (keyCode == LEFT && symphony == true){
     x = x + 8;
-    x0 = x0 + 8;
-    x1 = x1 + 8;
-    x2 = x2 + 8;
-    x3 = x3 + 8;
-    x4 = x4 + 8;
-    x5 = x5 + 8;
-    x6 = x6 + 8;
-    x7 = x7 + 8;
   }
-  if (xPos > 1900 && symphony == true){
+  if (keyCode == RIGHT && symphony == true){
     x = x - 8;
-    x0 = x0 - 8;
-    x1 = x1 - 8;
-    x2 = x2 - 8;
-    x3 = x3 - 8;
-    x4 = x4 - 8;
-    x5 = x5 - 8;
-    x6 = x6 - 8;
-    x7 = x7 - 8;
   }
-  
-  // for some reason it is backwards for y..
-  if (yPos < 1700 && w_space < max_zoom_w && symphony == false){
+  if (keyCode == UP && w_space < max_zoom_w && symphony == false){
     w_space = w_space * 1.2;
     h_space = h_space * 1.2;
     w_planet = w_planet * 1.2;
     h_planet = h_planet * 1.2;
     volume = volume + 0.15;
   }
-  if (yPos > 2000 && w_space > min_zoom_w && symphony == false){
+  if (keyCode == DOWN && w_space > min_zoom_w && symphony == false){
     w_space = w_space / 1.2;
     h_space = h_space / 1.2;
     w_planet = w_planet / 1.2;
     h_planet = h_planet / 1.2;
     volume = volume - 0.15;
   }
-  if (yPos < 1700 && symphony == true){
+  if (keyCode == UP && symphony == true){
     w_space = w_space * 1.2;
     h_space = h_space * 1.2;
   }
-  if (yPos > 2000 && symphony == true){
-    w_space = w_space / 1.2;
-    h_space = h_space / 1.2;
+  if (keyCode == DOWN && symphony == true){
   }
-   
-  if (button == 1 && symphony == false){
+  if (keyCode == SHIFT && symphony == false){
     if (counter == 7) counter = -1;
     if (prev_planet_sound == true) curr_sound.stop();
     prev_planet_sound = false;
@@ -213,7 +155,7 @@ void draw() {
     curr_sound.loop();
     prev_planet_sound = true;
   }
-  if (button == 1  && symphony == true){
+  if (keyCode == SHIFT && symphony == true){
     if (counter == 7) counter = -1;
     counter++;
     if (counter == 0){
@@ -249,5 +191,4 @@ void draw() {
       sounds[7].loop();
     }
   }
-  if (onOff > 0) symphony = true;
 }
